@@ -1,0 +1,60 @@
+{
+  "variant": "AuroraWave",
+  "total_trials": 3,
+  "best_trial": {
+    "trial_num": 2,
+    "params": {
+      "learning_rate": 0.00043674949054644244,
+      "embed_dim": 392,
+      "num_heads": 11,
+      "encoder_depths": [
+        2,
+        2,
+        6,
+        2
+      ],
+      "decoder_depths": [
+        2,
+        2,
+        6,
+        2
+      ],
+      "coastal_conditioning": true,
+      "spectral_loss_weight": 0.21131814526177736,
+      "window_size": 8,
+      "drop_path_rate": 0.24281622496067726,
+      "batch_size": 4
+    },
+    "metrics": {
+      "accuracy": 0.9242736758377184,
+      "precision": 0.8780599920458324,
+      "recall": 0.8503317817707009,
+      "f1_score": 0.8639734681092682,
+      "training_time": 1016.0231142593021,
+      "memory_gb": 20.144578658918903
+    },
+    "duration": 0.0,
+    "timestamp": "2025-11-17 21:17:23"
+  },
+  "statistics": {
+    "accuracy": {
+      "mean": 0.8495169536577866,
+      "min": 0.7892144061145241,
+      "max": 0.9242736758377184,
+      "std": 0.056076994438368
+    },
+    "f1_score": {
+      "mean": 0.7940939224565834,
+      "min": 0.7377255518118655,
+      "max": 0.8639734681092682,
+      "std": 0.05241849533597172
+    },
+    "training_time": {
+      "mean": 1308.2372315474672,
+      "min": 1016.0231142593021,
+      "max": 1480.8173646820787,
+      "total": 3924.7116946424017
+    }
+  },
+  "timestamp": "2025-11-17 21:17:23"
+}

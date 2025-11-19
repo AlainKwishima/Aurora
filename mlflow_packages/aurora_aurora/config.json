@@ -1,0 +1,33 @@
+{
+  "variant": "Aurora",
+  "hyperparameters": {
+    "learning_rate": 0.0003808121941077208,
+    "encoder_depths": [
+      2,
+      2,
+      6,
+      2
+    ],
+    "decoder_depths": [
+      2,
+      4,
+      8,
+      4
+    ],
+    "num_heads": 10,
+    "embed_dim": 766,
+    "patch_size": 14,
+    "window_size": 7,
+    "drop_path_rate": 0.13125118188605128,
+    "batch_size": 7
+  },
+  "metrics": {
+    "accuracy": 0.890407421625268,
+    "precision": 0.8458870505440046,
+    "recall": 0.8191748278952465,
+    "f1_score": 0.8323166700539937,
+    "training_time": 1240.9779632229302,
+    "memory_gb": 25.025088128709193
+  },
+  "created": "2025-11-17T21:35:11.847098"
+}

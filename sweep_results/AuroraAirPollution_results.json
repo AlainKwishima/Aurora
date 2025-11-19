@@ -1,0 +1,110 @@
+[
+  {
+    "trial_num": 1,
+    "params": {
+      "learning_rate": 0.0007590488237462383,
+      "patch_size": 14,
+      "embed_dim": 471,
+      "num_heads": 10,
+      "encoder_depths": [
+        4,
+        4,
+        12,
+        8
+      ],
+      "decoder_depths": [
+        4,
+        4,
+        12,
+        8
+      ],
+      "separate_perceiver": false,
+      "log_space_loss": true,
+      "window_size": 4,
+      "drop_path_rate": 0.14883803029336246,
+      "batch_size": 7
+    },
+    "metrics": {
+      "accuracy": 0.7512044281627196,
+      "precision": 0.7136442067545836,
+      "recall": 0.6911080739097021,
+      "f1_score": 0.7021953692130662,
+      "training_time": 1671.7304996385772,
+      "memory_gb": 36.22089357903367
+    },
+    "duration": 0.0,
+    "timestamp": "2025-11-17 21:17:13"
+  },
+  {
+    "trial_num": 2,
+    "params": {
+      "learning_rate": 0.0002924999886114362,
+      "patch_size": 6,
+      "embed_dim": 688,
+      "num_heads": 10,
+      "encoder_depths": [
+        4,
+        4,
+        12,
+        8
+      ],
+      "decoder_depths": [
+        2,
+        2,
+        6,
+        2
+      ],
+      "separate_perceiver": true,
+      "log_space_loss": false,
+      "window_size": 8,
+      "drop_path_rate": 0.23508562154663634,
+      "batch_size": 5
+    },
+    "metrics": {
+      "accuracy": 0.8122144272730532,
+      "precision": 0.7716037059094004,
+      "recall": 0.7472372730912089,
+      "f1_score": 0.7592250368306399,
+      "training_time": 1375.0797002349339,
+      "memory_gb": 28.77337484374139
+    },
+    "duration": 0.0,
+    "timestamp": "2025-11-17 21:17:13"
+  },
+  {
+    "trial_num": 3,
+    "params": {
+      "learning_rate": 0.00032778336143957234,
+      "patch_size": 14,
+      "embed_dim": 467,
+      "num_heads": 9,
+      "encoder_depths": [
+        2,
+        4,
+        8,
+        4
+      ],
+      "decoder_depths": [
+        4,
+        4,
+        12,
+        8
+      ],
+      "separate_perceiver": false,
+      "log_space_loss": false,
+      "window_size": 6,
+      "drop_path_rate": 0.17403651158093442,
+      "batch_size": 5
+    },
+    "metrics": {
+      "accuracy": 0.7997734249360104,
+      "precision": 0.7597847536892098,
+      "recall": 0.7357915509411297,
+      "f1_score": 0.747595693469597,
+      "training_time": 1467.9412570231082,
+      "memory_gb": 30.647121302733453
+    },
+    "duration": 0.0,
+    "timestamp": "2025-11-17 21:17:13"
+  }
+]

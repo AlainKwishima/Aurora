@@ -1,0 +1,107 @@
+[
+  {
+    "trial_num": 1,
+    "params": {
+      "learning_rate": 0.00019245481365289828,
+      "embed_dim": 616,
+      "num_heads": 16,
+      "encoder_depths": [
+        2,
+        4,
+        8,
+        4
+      ],
+      "decoder_depths": [
+        2,
+        4,
+        8,
+        4
+      ],
+      "coastal_conditioning": false,
+      "spectral_loss_weight": 0.9006493295546822,
+      "window_size": 7,
+      "drop_path_rate": 0.21284051364351175,
+      "batch_size": 15
+    },
+    "metrics": {
+      "accuracy": 0.7892144061145241,
+      "precision": 0.7497536858087979,
+      "recall": 0.7260772536253622,
+      "f1_score": 0.7377255518118655,
+      "training_time": 1480.8173646820787,
+      "memory_gb": 30.691285647662475
+    },
+    "duration": 0.0,
+    "timestamp": "2025-11-17 21:17:23"
+  },
+  {
+    "trial_num": 2,
+    "params": {
+      "learning_rate": 0.00043674949054644244,
+      "embed_dim": 392,
+      "num_heads": 11,
+      "encoder_depths": [
+        2,
+        2,
+        6,
+        2
+      ],
+      "decoder_depths": [
+        2,
+        2,
+        6,
+        2
+      ],
+      "coastal_conditioning": true,
+      "spectral_loss_weight": 0.21131814526177736,
+      "window_size": 8,
+      "drop_path_rate": 0.24281622496067726,
+      "batch_size": 4
+    },
+    "metrics": {
+      "accuracy": 0.9242736758377184,
+      "precision": 0.8780599920458324,
+      "recall": 0.8503317817707009,
+      "f1_score": 0.8639734681092682,
+      "training_time": 1016.0231142593021,
+      "memory_gb": 20.144578658918903
+    },
+    "duration": 0.0,
+    "timestamp": "2025-11-17 21:17:23"
+  },
+  {
+    "trial_num": 3,
+    "params": {
+      "learning_rate": 0.00042732622831751676,
+      "embed_dim": 562,
+      "num_heads": 13,
+      "encoder_depths": [
+        2,
+        2,
+        6,
+        2
+      ],
+      "decoder_depths": [
+        4,
+        4,
+        12,
+        8
+      ],
+      "coastal_conditioning": true,
+      "spectral_loss_weight": 0.33841075025451384,
+      "window_size": 8,
+      "drop_path_rate": 0.17084114473115863,
+      "batch_size": 11
+    },
+    "metrics": {
+      "accuracy": 0.8350627790211174,
+      "precision": 0.7933096400700614,
+      "recall": 0.768257756699428,
+      "f1_score": 0.7805827474486166,
+      "training_time": 1427.8712157010207,
+      "memory_gb": 31.14875536940435
+    },
+    "duration": 0.0,
+    "timestamp": "2025-11-17 21:17:23"
+  }
+]

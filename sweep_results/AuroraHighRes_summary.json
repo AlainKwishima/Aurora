@@ -1,0 +1,59 @@
+{
+  "variant": "AuroraHighRes",
+  "total_trials": 3,
+  "best_trial": {
+    "trial_num": 3,
+    "params": {
+      "learning_rate": 8.124137799395351e-05,
+      "patch_size": 3,
+      "embed_dim": 814,
+      "num_heads": 15,
+      "encoder_depths": [
+        2,
+        4,
+        12,
+        4
+      ],
+      "decoder_depths": [
+        2,
+        4,
+        12,
+        4
+      ],
+      "window_size": 4,
+      "drop_path_rate": 0.2712209072178994,
+      "batch_size": 4
+    },
+    "metrics": {
+      "accuracy": 0.8978620528399401,
+      "precision": 0.852968950197943,
+      "recall": 0.8260330886127449,
+      "f1_score": 0.8392849563445001,
+      "training_time": 1495.4216852596762,
+      "memory_gb": 32.51170854512236
+    },
+    "duration": 0.0,
+    "timestamp": "2025-11-17 21:17:03"
+  },
+  "statistics": {
+    "accuracy": {
+      "mean": 0.8304962587568592,
+      "min": 0.7439891820845845,
+      "max": 0.8978620528399401,
+      "std": 0.06425992329590358
+    },
+    "f1_score": {
+      "mean": 0.7763141498967859,
+      "min": 0.6954508504191731,
+      "max": 0.8392849563445001,
+      "std": 0.06006756466376441
+    },
+    "training_time": {
+      "mean": 1617.7280788167757,
+      "min": 1456.745166703275,
+      "max": 1901.017384487376,
+      "total": 4853.184236450327
+    }
+  },
+  "timestamp": "2025-11-17 21:17:03"
+}

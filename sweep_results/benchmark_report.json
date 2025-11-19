@@ -1,0 +1,332 @@
+{
+  "metadata": {
+    "generated_at": "2025-11-17T21:20:35.862940",
+    "variants_tested": [
+      "Aurora",
+      "AuroraHighRes",
+      "AuroraAirPollution",
+      "AuroraWave"
+    ],
+    "total_trials": 12
+  },
+  "performance_rankings": {
+    "accuracy": [
+      [
+        "AuroraWave",
+        0.9242736758377184
+      ],
+      [
+        "AuroraHighRes",
+        0.8978620528399401
+      ],
+      [
+        "Aurora",
+        0.890407421625268
+      ],
+      [
+        "AuroraAirPollution",
+        0.8122144272730532
+      ]
+    ],
+    "f1_score": [
+      [
+        "AuroraWave",
+        0.8639734681092682
+      ],
+      [
+        "AuroraHighRes",
+        0.8392849563445001
+      ],
+      [
+        "Aurora",
+        0.8323166700539937
+      ],
+      [
+        "AuroraAirPollution",
+        0.7592250368306399
+      ]
+    ],
+    "efficiency": [
+      [
+        "AuroraWave",
+        3.2749109605065487
+      ],
+      [
+        "Aurora",
+        2.5830166311141274
+      ],
+      [
+        "AuroraHighRes",
+        2.16146617511602
+      ],
+      [
+        "AuroraAirPollution",
+        2.126401791607736
+      ]
+    ]
+  },
+  "best_configurations": {
+    "Aurora": {
+      "hyperparameters": {
+        "learning_rate": 0.0003808121941077208,
+        "encoder_depths": [
+          2,
+          2,
+          6,
+          2
+        ],
+        "decoder_depths": [
+          2,
+          4,
+          8,
+          4
+        ],
+        "num_heads": 10,
+        "embed_dim": 766,
+        "patch_size": 14,
+        "window_size": 7,
+        "drop_path_rate": 0.13125118188605128,
+        "batch_size": 7
+      },
+      "performance": {
+        "accuracy": 0.890407421625268,
+        "f1_score": 0.8323166700539937,
+        "precision": 0.8458870505440046,
+        "recall": 0.8191748278952465
+      },
+      "efficiency": {
+        "training_time": 1240.9779632229302,
+        "memory_gb": 25.025088128709193
+      }
+    },
+    "AuroraHighRes": {
+      "hyperparameters": {
+        "learning_rate": 8.124137799395351e-05,
+        "patch_size": 3,
+        "embed_dim": 814,
+        "num_heads": 15,
+        "encoder_depths": [
+          2,
+          4,
+          12,
+          4
+        ],
+        "decoder_depths": [
+          2,
+          4,
+          12,
+          4
+        ],
+        "window_size": 4,
+        "drop_path_rate": 0.2712209072178994,
+        "batch_size": 4
+      },
+      "performance": {
+        "accuracy": 0.8978620528399401,
+        "f1_score": 0.8392849563445001,
+        "precision": 0.852968950197943,
+        "recall": 0.8260330886127449
+      },
+      "efficiency": {
+        "training_time": 1495.4216852596762,
+        "memory_gb": 32.51170854512236
+      }
+    },
+    "AuroraAirPollution": {
+      "hyperparameters": {
+        "learning_rate": 0.0002924999886114362,
+        "patch_size": 6,
+        "embed_dim": 688,
+        "num_heads": 10,
+        "encoder_depths": [
+          4,
+          4,
+          12,
+          8
+        ],
+        "decoder_depths": [
+          2,
+          2,
+          6,
+          2
+        ],
+        "separate_perceiver": true,
+        "log_space_loss": false,
+        "window_size": 8,
+        "drop_path_rate": 0.23508562154663634,
+        "batch_size": 5
+      },
+      "performance": {
+        "accuracy": 0.8122144272730532,
+        "f1_score": 0.7592250368306399,
+        "precision": 0.7716037059094004,
+        "recall": 0.7472372730912089
+      },
+      "efficiency": {
+        "training_time": 1375.0797002349339,
+        "memory_gb": 28.77337484374139
+      }
+    },
+    "AuroraWave": {
+      "hyperparameters": {
+        "learning_rate": 0.00043674949054644244,
+        "embed_dim": 392,
+        "num_heads": 11,
+        "encoder_depths": [
+          2,
+          2,
+          6,
+          2
+        ],
+        "decoder_depths": [
+          2,
+          2,
+          6,
+          2
+        ],
+        "coastal_conditioning": true,
+        "spectral_loss_weight": 0.21131814526177736,
+        "window_size": 8,
+        "drop_path_rate": 0.24281622496067726,
+        "batch_size": 4
+      },
+      "performance": {
+        "accuracy": 0.9242736758377184,
+        "f1_score": 0.8639734681092682,
+        "precision": 0.8780599920458324,
+        "recall": 0.8503317817707009
+      },
+      "efficiency": {
+        "training_time": 1016.0231142593021,
+        "memory_gb": 20.144578658918903
+      }
+    }
+  },
+  "efficiency_metrics": {
+    "Aurora": {
+      "training_time": 1240.9779632229302,
+      "memory_gb": 25.025088128709193,
+      "accuracy_per_hour": 2.5830166311141274,
+      "accuracy_per_gb": 0.03558059084730167
+    },
+    "AuroraHighRes": {
+      "training_time": 1495.4216852596762,
+      "memory_gb": 32.51170854512236,
+      "accuracy_per_hour": 2.16146617511602,
+      "accuracy_per_gb": 0.027616575474457613
+    },
+    "AuroraAirPollution": {
+      "training_time": 1375.0797002349339,
+      "memory_gb": 28.77337484374139,
+      "accuracy_per_hour": 2.126401791607736,
+      "accuracy_per_gb": 0.028227986174159933
+    },
+    "AuroraWave": {
+      "training_time": 1016.0231142593021,
+      "memory_gb": 20.144578658918903,
+      "accuracy_per_hour": 3.2749109605065487,
+      "accuracy_per_gb": 0.045882005848183936
+    }
+  },
+  "architecture_analysis": {
+    "Aurora": {
+      "total_encoder_layers": 12,
+      "total_decoder_layers": 18,
+      "model_complexity_score": 22980,
+      "attention_heads": 10,
+      "embedding_dimension": 766,
+      "efficiency_ratio": 3.8747059252622625e-05
+    },
+    "AuroraHighRes": {
+      "total_encoder_layers": 22,
+      "total_decoder_layers": 22,
+      "model_complexity_score": 35816,
+      "attention_heads": 15,
+      "embedding_dimension": 814,
+      "efficiency_ratio": 2.506874170314776e-05
+    },
+    "AuroraAirPollution": {
+      "total_encoder_layers": 28,
+      "total_decoder_layers": 12,
+      "model_complexity_score": 27520,
+      "attention_heads": 10,
+      "embedding_dimension": 688,
+      "efficiency_ratio": 2.9513605642189432e-05
+    },
+    "AuroraWave": {
+      "total_encoder_layers": 12,
+      "total_decoder_layers": 12,
+      "model_complexity_score": 9408,
+      "attention_heads": 11,
+      "embedding_dimension": 392,
+      "efficiency_ratio": 9.824337540792075e-05
+    }
+  },
+  "recommendations": [
+    {
+      "category": "Performance",
+      "priority": "High",
+      "recommendation": "Deploy AuroraWave for highest accuracy (0.9243)",
+      "rationale": "AuroraWave achieved the best accuracy in hyperparameter sweeps"
+    },
+    {
+      "category": "Efficiency",
+      "priority": "Medium",
+      "recommendation": "Use AuroraWave for best training efficiency",
+      "rationale": "AuroraWave provides highest accuracy per training hour"
+    },
+    {
+      "category": "Resource Management",
+      "priority": "High",
+      "recommendation": "Consider memory optimization for Aurora (25.0GB)",
+      "rationale": "Aurora requires significant memory resources"
+    },
+    {
+      "category": "Resource Management",
+      "priority": "High",
+      "recommendation": "Consider memory optimization for AuroraHighRes (32.5GB)",
+      "rationale": "AuroraHighRes requires significant memory resources"
+    },
+    {
+      "category": "Resource Management",
+      "priority": "High",
+      "recommendation": "Consider memory optimization for AuroraAirPollution (28.8GB)",
+      "rationale": "AuroraAirPollution requires significant memory resources"
+    },
+    {
+      "category": "Resource Management",
+      "priority": "High",
+      "recommendation": "Consider memory optimization for AuroraWave (20.1GB)",
+      "rationale": "AuroraWave requires significant memory resources"
+    },
+    {
+      "category": "Architecture",
+      "priority": "Medium",
+      "recommendation": "Consider reducing model complexity for Aurora",
+      "rationale": "Low efficiency ratio suggests over-parameterization"
+    },
+    {
+      "category": "Architecture",
+      "priority": "Medium",
+      "recommendation": "Consider reducing model complexity for AuroraHighRes",
+      "rationale": "Low efficiency ratio suggests over-parameterization"
+    },
+    {
+      "category": "Architecture",
+      "priority": "Medium",
+      "recommendation": "Consider reducing model complexity for AuroraAirPollution",
+      "rationale": "Low efficiency ratio suggests over-parameterization"
+    },
+    {
+      "category": "Architecture",
+      "priority": "Medium",
+      "recommendation": "Consider reducing model complexity for AuroraWave",
+      "rationale": "Low efficiency ratio suggests over-parameterization"
+    }
+  ],
+  "deployment_strategy": {
+    "highest_accuracy": "AuroraWave",
+    "most_efficient": "AuroraWave",
+    "best_balance": "AuroraWave"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "variant": "AuroraWave",
+  "hyperparameters": {
+    "learning_rate": 0.00043674949054644244,
+    "embed_dim": 392,
+    "num_heads": 11,
+    "encoder_depths": [
+      2,
+      2,
+      6,
+      2
+    ],
+    "decoder_depths": [
+      2,
+      2,
+      6,
+      2
+    ],
+    "coastal_conditioning": true,
+    "spectral_loss_weight": 0.21131814526177736,
+    "window_size": 8,
+    "drop_path_rate": 0.24281622496067726,
+    "batch_size": 4
+  },
+  "metrics": {
+    "accuracy": 0.9242736758377184,
+    "precision": 0.8780599920458324,
+    "recall": 0.8503317817707009,
+    "f1_score": 0.8639734681092682,
+    "training_time": 1016.0231142593021,
+    "memory_gb": 20.144578658918903
+  },
+  "created": "2025-11-17T21:35:11.860790"
+}

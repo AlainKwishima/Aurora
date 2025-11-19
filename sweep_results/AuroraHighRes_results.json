@@ -1,0 +1,104 @@
+[
+  {
+    "trial_num": 1,
+    "params": {
+      "learning_rate": 0.0003422333031281536,
+      "patch_size": 2,
+      "embed_dim": 986,
+      "num_heads": 21,
+      "encoder_depths": [
+        2,
+        4,
+        12,
+        4
+      ],
+      "decoder_depths": [
+        2,
+        2,
+        8,
+        2
+      ],
+      "window_size": 8,
+      "drop_path_rate": 0.1714079952759184,
+      "batch_size": 5
+    },
+    "metrics": {
+      "accuracy": 0.8496375413460527,
+      "precision": 0.8071556642787501,
+      "recall": 0.7816665380383686,
+      "f1_score": 0.7942066429266847,
+      "training_time": 1456.745166703275,
+      "memory_gb": 31.309664069399673
+    },
+    "duration": 0.0,
+    "timestamp": "2025-11-17 21:17:03"
+  },
+  {
+    "trial_num": 2,
+    "params": {
+      "learning_rate": 0.00018771357381644892,
+      "patch_size": 8,
+      "embed_dim": 637,
+      "num_heads": 14,
+      "encoder_depths": [
+        4,
+        4,
+        16,
+        8
+      ],
+      "decoder_depths": [
+        4,
+        4,
+        16,
+        8
+      ],
+      "window_size": 6,
+      "drop_path_rate": 0.2739673060698205,
+      "batch_size": 4
+    },
+    "metrics": {
+      "accuracy": 0.7439891820845845,
+      "precision": 0.7067897229803553,
+      "recall": 0.6844700475178178,
+      "f1_score": 0.6954508504191731,
+      "training_time": 1901.017384487376,
+      "memory_gb": 41.51991484403897
+    },
+    "duration": 0.0,
+    "timestamp": "2025-11-17 21:17:03"
+  },
+  {
+    "trial_num": 3,
+    "params": {
+      "learning_rate": 8.124137799395351e-05,
+      "patch_size": 3,
+      "embed_dim": 814,
+      "num_heads": 15,
+      "encoder_depths": [
+        2,
+        4,
+        12,
+        4
+      ],
+      "decoder_depths": [
+        2,
+        4,
+        12,
+        4
+      ],
+      "window_size": 4,
+      "drop_path_rate": 0.2712209072178994,
+      "batch_size": 4
+    },
+    "metrics": {
+      "accuracy": 0.8978620528399401,
+      "precision": 0.852968950197943,
+      "recall": 0.8260330886127449,
+      "f1_score": 0.8392849563445001,
+      "training_time": 1495.4216852596762,
+      "memory_gb": 32.51170854512236
+    },
+    "duration": 0.0,
+    "timestamp": "2025-11-17 21:17:03"
+  }
+]

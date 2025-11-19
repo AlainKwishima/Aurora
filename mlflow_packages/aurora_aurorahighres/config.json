@@ -1,0 +1,33 @@
+{
+  "variant": "AuroraHighRes",
+  "hyperparameters": {
+    "learning_rate": 8.124137799395351e-05,
+    "patch_size": 3,
+    "embed_dim": 814,
+    "num_heads": 15,
+    "encoder_depths": [
+      2,
+      4,
+      12,
+      4
+    ],
+    "decoder_depths": [
+      2,
+      4,
+      12,
+      4
+    ],
+    "window_size": 4,
+    "drop_path_rate": 0.2712209072178994,
+    "batch_size": 4
+  },
+  "metrics": {
+    "accuracy": 0.8978620528399401,
+    "precision": 0.852968950197943,
+    "recall": 0.8260330886127449,
+    "f1_score": 0.8392849563445001,
+    "training_time": 1495.4216852596762,
+    "memory_gb": 32.51170854512236
+  },
+  "created": "2025-11-17T21:35:11.849112"
+}
