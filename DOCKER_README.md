@@ -75,3 +75,23 @@ To use NVIDIA GPUs, you need:
 1. NVIDIA drivers installed on the host.
 2. [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html) installed.
 3. Uncomment the `deploy` section in `docker-compose.yml`.
+
+## Publishing to Docker Hub
+
+To share your image, you can push it to Docker Hub.
+
+1. **Log in to Docker Hub:**
+   ```bash
+   docker login
+   ```
+
+2. **Tag the image:**
+   Replace `yourusername` with your actual Docker Hub username.
+   ```bash
+   docker tag aurora-rwanda:latest yourusername/aurora-rwanda:latest
+   ```
+
+3. **Push the image:**
+   ```bash
+   docker push yourusername/aurora-rwanda:latest
+   ```

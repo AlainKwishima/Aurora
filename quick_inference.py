@@ -22,6 +22,7 @@ except ImportError:
     sys.path.append('..')
     from notebooks.rwanda_aurora_training import KaggleConfig, RwandaAuroraLite
 
+print("✓ Fix applied: KaggleConfig imported")
 print("Rwanda Aurora - Quick Inference")
 print("=" * 60)
 
