@@ -9,6 +9,18 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
+import sys
+import os
+
+# Add current directory to path to ensure imports work
+sys.path.append(os.getcwd())
+
+try:
+    from notebooks.rwanda_aurora_training import KaggleConfig, RwandaAuroraLite
+except ImportError:
+    # Fallback if running from notebooks directory
+    sys.path.append('..')
+    from notebooks.rwanda_aurora_training import KaggleConfig, RwandaAuroraLite
 
 print("Rwanda Aurora - Quick Inference")
 print("=" * 60)

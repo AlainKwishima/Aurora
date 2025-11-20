@@ -8,8 +8,22 @@ Use this script to evaluate the trained model and make predictions.
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
+from datetime import datetime, timedelta
+import sys
+import os
 import xarray as xr
 from pathlib import Path
+
+# Add current directory to path to ensure imports work
+sys.path.append(os.getcwd())
+
+try:
+    from notebooks.rwanda_aurora_training import KaggleConfig, RwandaAuroraLite
+except ImportError:
+    # Fallback if running from notebooks directory
+    sys.path.append('..')
+    from notebooks.rwanda_aurora_training import KaggleConfig, RwandaAuroraLite
 
 # ================================
 # CONFIGURATION
