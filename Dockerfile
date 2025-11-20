@@ -4,7 +4,8 @@ FROM python:3.10-slim
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PYTHONPATH=/app
+    PYTHONPATH=/app \
+    SETUPTOOLS_SCM_PRETEND_VERSION=1.0.0
 
 # Set working directory
 WORKDIR /app
@@ -27,8 +28,9 @@ COPY aurora/ aurora/
 
 # Install dependencies and the aurora package
 # We use --no-cache-dir to keep image size down
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir ".[dev]"
+# Increased timeout to prevent read timeouts on slow connections
+RUN pip install --no-cache-dir --upgrade pip --default-timeout=1000 && \
+    pip install --no-cache-dir ".[dev]" --default-timeout=1000
 
 # Copy the rwanda module (local package)
 COPY rwanda/ rwanda/
