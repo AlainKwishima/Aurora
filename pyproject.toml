@@ -44,6 +44,8 @@ dependencies = [
     "xarray",
     "netcdf4",
     "azure-storage-blob",
+    "seaborn",
+    "matplotlib",
 ]
 
 [project.optional-dependencies]
