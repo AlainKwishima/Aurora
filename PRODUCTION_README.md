@@ -122,7 +122,17 @@ with torch.no_grad():
 
 - Use P3/V100 instances
 - Expected: ~10-30 seconds per epoch
-- Total training: ~30-60 minutes
+### Option 3: Docker Deployment (Containerized)
+
+For a consistent environment and easy deployment, use Docker.
+
+See [DOCKER_README.md](DOCKER_README.md) for detailed instructions.
+
+```bash
+# Build and run inference
+docker-compose build
+docker-compose run --rm inference
+```
 
 ---
 

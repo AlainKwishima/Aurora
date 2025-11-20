@@ -1,0 +1,50 @@
+services:
+  # Default service: Quick Inference
+  inference:
+    build: .
+    image: aurora-rwanda:latest
+    volumes:
+      - ./working:/app/working
+      - ./evaluation_results:/app/evaluation_results
+    command: python quick_inference.py
+    environment:
+      - MPS_ENABLE=0 # Disable MPS inside Docker (uses CPU or CUDA if configured)
+
+  # Training Service
+  train:
+    build: .
+    image: aurora-rwanda:latest
+    volumes:
+      - ./working:/app/working
+      - ./evaluation_results:/app/evaluation_results
+    # Increase shared memory size for PyTorch dataloaders
+    shm_size: '4gb'
+    command: python notebooks/rwanda_aurora_training.py
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+    # Note: Remove the 'deploy' section if not using NVIDIA GPU
+
+    # Evaluation Service
+  evaluate:
+    build: .
+    image: aurora-rwanda:latest
+    volumes:
+      - ./working:/app/working
+      - ./evaluation_results:/app/evaluation_results
+    command: python evaluate_model.py
+
+  # Interactive Shell
+  shell:
+    build: .
+    image: aurora-rwanda:latest
+    volumes:
+      - ./working:/app/working
+      - ./evaluation_results:/app/evaluation_results
+    command: /bin/bash
+    stdin_open: true
+    tty: true

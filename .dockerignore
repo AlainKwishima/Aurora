@@ -1,0 +1,37 @@
+# Git
+.git
+.gitignore
+.github
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+.venv
+
+# Jupyter
+.ipynb_checkpoints
+
+# Project Artifacts
+working/
+*.log
+*.pt
+*.nc
+*.png
+evaluation_results/
+training_results.json
+
+# IDEs
+.vscode
+.idea
+.DS_Store
+
+# Build
+build/
+dist/
+*.egg-info/
