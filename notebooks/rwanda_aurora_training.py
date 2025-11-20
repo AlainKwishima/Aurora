@@ -110,12 +110,13 @@ class KaggleConfig:
         
         # Training configuration
         self.training_config = {
-            'batch_size': 1,  # Small batch for Kaggle GPU memory
-            'num_epochs': 50,
-            'learning_rate': 1e-4,
-            'accumulation_steps': 4,  # Effective batch size = 4
+            'batch_size': 2,  # Increased for MPS GPU
+            'num_epochs': 100,  # More epochs for better convergence  
+            'learning_rate': 5e-5,  # Lower LR for stability
+            'accumulation_steps': 2,  # Effective batch size = 4
             'save_every': 5,
-            'val_check_interval': 100,
+            'val_check_interval': 10,  # More frequent validation
+            'early_stopping_patience': 15,  # Stop if no improvement
             'session_save_interval': 30,  # Save every 30 minutes
             'max_session_hours': 8  # Kaggle limit safety margin
         }
@@ -135,13 +136,25 @@ class KaggleConfig:
     
     def get_device(self):
         """Get optimal device for training"""
+        # MPS disabled due to trace trap issue - needs further debugging
+        # TODO: Test with newer PyTorch versions or report to PyTorch team
+        use_mps = False  # Set to True to test (currently causes trace trap)
+        
         if torch.cuda.is_available():
             device = torch.device('cuda')
-            print(f"Using GPU: {torch.cuda.get_device_name()}")
+            print(f"Using GPU (CUDA): {torch.cuda.get_device_name()}")
             print(f"GPU Memory: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
+        elif use_mps and hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+            device = torch.device('mps')
+            print("Using GPU (Apple Silicon MPS)")
+            print("MPS (Metal Performance Shaders) enabled for GPU acceleration")
+            print("Note: Using vectorized normalization for MPS compatibility")
         else:
             device = torch.device('cpu')
-            print("Using CPU")
+            if hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+                print("Using CPU (MPS available but disabled - trace trap issue)")
+            else:
+                print("Using CPU")
         return device
 
 # Initialize configuration
@@ -332,6 +345,40 @@ class RwandaNormalization(nn.Module):
             return data * self.pressure_std + self.pressure_mean
         else:
             return data
+    
+    def normalize_batch(self, x):
+        """Vectorized batch normalization for MPS compatibility"""
+        # x shape: [..., 5] where last dim is [2t, tp, 10u, 10v, msl]
+        device = x.device
+        
+        # Create normalization tensors
+        means = torch.tensor([295.0, 1e-6, 2.0, 2.0, 85000.0], device=device)
+        stds = torch.tensor([8.0, 5e-6, 3.0, 3.0, 2000.0], device=device)
+        
+        # Standard normalization for most variables
+        x_norm = (x - means) / stds
+        
+        # Special handling for precipitation (index 1) - log transform
+        x_norm[..., 1] = torch.log(x[..., 1] + 1e-8) / 10.0
+        
+        return x_norm
+    
+    def denormalize_batch(self, x_norm):
+        """Vectorized batch denormalization for MPS compatibility"""
+        # x_norm shape: [..., 5]
+        device = x_norm.device
+        
+        # Create denormalization tensors
+        means = torch.tensor([295.0, 1e-6, 2.0, 2.0, 85000.0], device=device)
+        stds = torch.tensor([8.0, 5e-6, 3.0, 3.0, 2000.0], device=device)
+        
+        # Standard denormalization
+        x = x_norm * stds + means
+        
+        # Special handling for precipitation (index 1) - exp transform
+        x[..., 1] = torch.exp(x_norm[..., 1] * 10.0) - 1e-8
+        
+        return x
 
 class RwandaAuroraLite(nn.Module):
     """Lightweight Rwanda-specific Aurora model for Kaggle"""
@@ -347,12 +394,17 @@ class RwandaAuroraLite(nn.Module):
         self.sequence_length = config.data_config['sequence_length']
         self.forecast_length = config.data_config['forecast_length']
         
+        # Spatial dimensions (approximate for Rwanda at 0.25° resolution)
+        self.height = 8  # Will be dynamically determined
+        self.width = 9
+        self.flat_spatial_dim = 8 * 9 * 5  # height * width * channels = 360
+        
         # Rwanda-specific normalization
         self.normalizer = RwandaNormalization()
         
         # Encoder (processes input sequences)
         self.encoder = nn.LSTM(
-            input_size=self.input_dim,
+            input_size=self.flat_spatial_dim,  # Flattened spatial-channel input
             hidden_size=self.hidden_dim,
             num_layers=self.num_layers,
             batch_first=True,
@@ -361,7 +413,7 @@ class RwandaAuroraLite(nn.Module):
         
         # Decoder (generates forecasts)
         self.decoder = nn.LSTM(
-            input_size=self.input_dim,
+            input_size=self.hidden_dim,
             hidden_size=self.hidden_dim,
             num_layers=self.num_layers,
             batch_first=True,
@@ -369,7 +421,7 @@ class RwandaAuroraLite(nn.Module):
         )
         
         # Output projection
-        self.output_proj = nn.Linear(self.hidden_dim, self.input_dim)
+        self.output_proj = nn.Linear(self.hidden_dim, self.flat_spatial_dim)
         
         # Rwanda-specific components
         self.altitude_embedding = nn.Embedding(100, 32)  # Altitude-based embedding
@@ -377,50 +429,66 @@ class RwandaAuroraLite(nn.Module):
         
         print(f"Initialized RwandaAuroraLite with {sum(p.numel() for p in self.parameters()):,} parameters")
     
-    def forward(self, x):
-        """Forward pass"""
+    def forward(self, x, use_vectorized=True):
+        """Forward pass with normalization
+        
+        Args:
+            x: Input tensor [batch, seq_len, height, width, channels]
+            use_vectorized: If True, use vectorized normalization (MPS compatible)
+        """
         batch_size, seq_len, height, width, channels = x.shape
         
-        # Reshape for processing
-        x_reshaped = x.view(batch_size * seq_len * height * width, channels)
+        # Choose normalization method
+        if use_vectorized:
+            # Vectorized normalization (MPS compatible)
+            x_normalized = self.normalizer.normalize_batch(x)
+        else:
+            # Loop-based normalization (slower but more flexible)
+            var_names = ['2t', 'tp', '10u', '10v', 'msl']
+            x_normalized = x.clone()
+            for i, var_name in enumerate(var_names):
+                x_normalized[..., i] = self.normalizer.normalize_variable(x[..., i], var_name)
         
-        # Normalize inputs
-        x_norm = torch.zeros_like(x_reshaped)
-        var_names = ['2t', 'tp', '10u', '10v', 'msl']
-        for i, var_name in enumerate(var_names):
-            x_norm[:, i] = self.normalizer.normalize_variable(x_reshaped[:, i], var_name).squeeze()
-        
-        # Reshape back
-        x_norm = x_norm.view(batch_size, seq_len * height * width, channels)
+        # Flatten spatial dimensions
+        # x shape: [batch, seq_len, height, width, channels]
+        x_flat = x_normalized.view(batch_size, seq_len, height * width * channels)
         
         # Encode input sequence
-        encoded, (h_n, c_n) = self.encoder(x_norm)
+        encoded, (h_n, c_n) = self.encoder(x_flat)
         
-        # Initialize decoder
-        decoder_input = encoded[:, -1:, :]  # Last encoded state
+        # Initialize decoder with zeros (forecast length)
+        decoder_input = torch.zeros(batch_size, 1, self.hidden_dim, device=x.device)
         predictions = []
         
-        # Generate forecasts
+        # Generate forecasts step by step
         for t in range(self.forecast_length):
             output, (h_n, c_n) = self.decoder(decoder_input, (h_n, c_n))
-            pred = self.output_proj(output)
+            decoder_input = output  # Use decoder output as next input
+            
+            # Project to output space
+            pred = self.output_proj(output)  # [batch, 1, hidden_dim] -> [batch, 1, height*width*channels]
             predictions.append(pred)
-            decoder_input = pred  # Use prediction as next input
         
-        # Concatenate predictions
-        predictions = torch.cat(predictions, dim=1)
+        # Concatenate all predictions
+        # predictions: list of [batch, 1, height*width*channels] tensors
+        predictions = torch.cat(predictions, dim=1)  # [batch, forecast_length, height*width*channels]
         
         # Reshape to spatial format
         predictions = predictions.view(batch_size, self.forecast_length, height, width, channels)
         
-        # Denormalize outputs
-        pred_denorm = torch.zeros_like(predictions)
-        for i, var_name in enumerate(var_names):
-            pred_flat = predictions[..., i].view(-1)
-            pred_denorm_flat = self.normalizer.denormalize_variable(pred_flat, var_name)
-            pred_denorm[..., i] = pred_denorm_flat.view(predictions[..., i].shape)
+        # Denormalize predictions
+        if use_vectorized:
+            # Vectorized denormalization (MPS compatible)
+            predictions_denorm = self.normalizer.denormalize_batch(predictions)
+        else:
+            # Loop-based denormalization
+            var_names = ['2t', 'tp', '10u', '10v', 'msl']
+            predictions_denorm = predictions.clone()
+            for i, var_name in enumerate(var_names):
+                predictions_denorm[..., i] = self.normalizer.denormalize_variable(predictions[..., i], var_name)
         
-        return pred_denorm
+        return predictions_denorm
+
 
 # ================================
 # DATASET CLASS
@@ -678,8 +746,8 @@ def train_model(model, train_loader, val_loader, config, device):
                 
             else:
                 patience_counter += 1
-                if patience_counter >= 10:
-                    print("Early stopping triggered!")
+                if patience_counter >= config.training_config['early_stopping_patience']:
+                    print(f"Early stopping triggered after {patience_counter} epochs without improvement!")
                     break
         
         # Learning rate scheduling
@@ -824,12 +892,16 @@ def main():
     model = RwandaAuroraLite(config).to(device)
     
     # Enable mixed precision and memory optimizations
-    if config.model_config['use_checkpointing']:
+    # Note: Disable torch.compile for MPS to avoid compatibility issues
+    if config.model_config['use_checkpointing'] and device.type != 'mps':
         try:
             model = torch.compile(model)  # PyTorch 2.0 optimization
             print("✓ Model compiled with torch.compile")
         except:
             print("✗ torch.compile not available, using regular model")
+    else:
+        if device.type == 'mps':
+            print("ℹ️  Skipping torch.compile for MPS (compatibility)")
     
     print(f"Model parameters: {sum(p.numel() for p in model.parameters()):,}")
     monitor_memory()
