@@ -36,3 +36,6 @@ aurora_mlflow_pyfunc/
 mlruns/
 working/
 *.log
+
+# Local configuration
+cdsapi_config
