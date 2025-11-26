@@ -96,7 +96,7 @@ def parse_years(year_str):
 
 
 def download_era5(years, output_path):
-    """Download ERA5 data from CDS."""
+    """Download ERA5 data from CDS year by year and merge."""
     print("🌍 ERA5 Data Download for Rwanda")
     print("=" * 60)
     print(f"Years: {min(years)} - {max(years)}")
@@ -113,47 +113,104 @@ def download_era5(years, output_path):
         c = cdsapi.Client()
     except Exception as e:
         print(f"\n❌ Failed to initialize CDS API client: {e}")
-        print("\nPlease ensure:")
-        print("1. You have an account at: https://cds.climate.copernicus.eu")
-        print("2. Your API key is in ~/.cdsapirc")
-        print("3. Format of ~/.cdsapirc:")
-        print("   url: https://cds.climate.copernicus.eu/api/v2")
-        print("   key: YOUR_UID:YOUR_API_KEY")
         return False
     
-    # Prepare request
-    request = {
-        'product_type': 'reanalysis',
-        'variable': ERA5_VARIABLES,
-        'year': [str(y) for y in years],
-        'month': [f'{m:02d}' for m in range(1, 13)],
-        'day': [f'{d:02d}' for d in range(1, 32)],
-        'time': TIMES,
-        'area': [
-            RWANDA_BOUNDS['north'],
-            RWANDA_BOUNDS['west'],
-            RWANDA_BOUNDS['south'],
-            RWANDA_BOUNDS['east'],
-        ],
-        'format': 'netcdf',
-    }
-    
-    print(f"\n📥 Downloading data...")
-    print(f"Estimated size: ~{len(years) * 100} MB")
-    print(f"Estimated time: ~{len(years) * 5} minutes")
-    print("\nThis may take a while. Please be patient...\n")
+    temp_files = []
     
     try:
-        c.retrieve(
-            'reanalysis-era5-single-levels',
-            request,
-            output_path
-        )
-        print(f"\n✅ Download complete: {output_path}")
+        for year in years:
+            print(f"\n📥 Downloading year {year}...")
+            year_file = f"{output_path}_{year}.nc"
+            temp_files.append(year_file)
+            
+            if os.path.exists(year_file):
+                print(f"  ✓ File exists, skipping: {year_file}")
+                continue
+            
+            request = {
+                'product_type': 'reanalysis',
+                'variable': ERA5_VARIABLES,
+                'year': str(year),
+                'month': [f'{m:02d}' for m in range(1, 13)],
+                'day': [f'{d:02d}' for d in range(1, 32)],
+                'time': TIMES,
+                'area': [
+                    RWANDA_BOUNDS['north'],
+                    RWANDA_BOUNDS['west'],
+                    RWANDA_BOUNDS['south'],
+                    RWANDA_BOUNDS['east'],
+                ],
+                'format': 'netcdf',
+            }
+            
+            c.retrieve(
+                'reanalysis-era5-single-levels',
+                request,
+                year_file
+            )
+            print(f"  ✓ Downloaded: {year_file}")
+            
+            # Check if it's a zip file
+            import zipfile
+            if zipfile.is_zipfile(year_file):
+                print(f"  📦 Extracting zip file: {year_file}")
+                with zipfile.ZipFile(year_file, 'r') as zip_ref:
+                    # Extract to same directory
+                    zip_ref.extractall(os.path.dirname(year_file))
+                    # Find the extracted nc file (usually data.nc or similar)
+                    extracted_files = zip_ref.namelist()
+                    nc_files = [f for f in extracted_files if f.endswith('.nc')]
+                    if nc_files:
+                        # Rename the first nc file to our target year_file
+                        extracted_nc = os.path.join(os.path.dirname(year_file), nc_files[0])
+                        # Remove the zip file
+                        os.remove(year_file)
+                        # Rename extracted to target
+                        os.rename(extracted_nc, year_file)
+                        print(f"  ✓ Extracted and renamed to: {year_file}")
+                        # Clean up other extracted files if any
+                        for f in extracted_files:
+                            path = os.path.join(os.path.dirname(year_file), f)
+                            if path != year_file and os.path.exists(path):
+                                os.remove(path)
+                    else:
+                        print(f"  ⚠️  No .nc file found in zip: {extracted_files}")
+        
+        # Merge files
+        print(f"\n🔄 Merging {len(temp_files)} files...")
+        ds_list = []
+        for f in temp_files:
+            try:
+                ds_list.append(xr.open_dataset(f))
+            except Exception as e:
+                print(f"  ❌ Failed to open {f}: {e}")
+                raise
+            
+        combined = xr.concat(ds_list, dim='time')
+        combined = combined.sortby('time')
+        
+        print(f"  ✓ Saving merged file to {output_path}")
+        combined.to_netcdf(output_path)
+        
+        # Cleanup temp files
+        print("  ✓ Cleaning up temporary files")
+        for ds in ds_list:
+            ds.close()
+        for f in temp_files:
+            if os.path.exists(f):
+                os.remove(f)
+                
         return True
         
     except Exception as e:
         print(f"\n❌ Download failed: {e}")
+        # Cleanup on failure
+        # for f in temp_files:
+        #     if os.path.exists(f):
+        #         try:
+        #             os.remove(f)
+        #         except:
+        #             pass
         return False
 
 
@@ -206,15 +263,27 @@ def split_data(file_path):
     try:
         ds = xr.open_dataset(file_path)
         
+        # Decode times if needed
+        if 'valid_time' in ds.dims or 'valid_time' in ds.coords:
+            # CDS sometimes uses valid_time instead of time
+            time_coord = 'valid_time'
+        else:
+            time_coord = 'time'
+        
+        # Convert to datetime if not already
+        ds = xr.decode_cf(ds)
+        
         # Sort by time
-        ds = ds.sortby('time')
+        ds = ds.sortby(time_coord)
         
         # Split by year
         # Train: 70% (oldest years)
         # Val: 15% (middle years)
         # Test: 15% (most recent years)
         
-        years = ds.time.dt.year.values
+        # Extract years from the time coordinate
+        time_da = ds[time_coord]
+        years = time_da.dt.year.values
         unique_years = np.unique(years)
         
         n_years = len(unique_years)
@@ -223,9 +292,13 @@ def split_data(file_path):
         test_years = unique_years[int(n_years * 0.85):]
         
         # Create splits
-        train_ds = ds.sel(time=ds.time.dt.year.isin(train_years))
-        val_ds = ds.sel(time=ds.time.dt.year.isin(val_years))
-        test_ds = ds.sel(time=ds.time.dt.year.isin(test_years))
+        train_mask = time_da.dt.year.isin(train_years)
+        val_mask = time_da.dt.year.isin(val_years)
+        test_mask = time_da.dt.year.isin(test_years)
+        
+        train_ds = ds.sel({time_coord: train_mask})
+        val_ds = ds.sel({time_coord: val_mask})
+        test_ds = ds.sel({time_coord: test_mask})
         
         # Save splits
         base_path = Path(file_path)
@@ -234,13 +307,13 @@ def split_data(file_path):
         test_path = base_path.parent / f"{base_path.stem}_test.nc"
         
         print(f"\nSaving splits:")
-        print(f"  Train: {train_path} ({len(train_ds.time)} timesteps, years {train_years[0]}-{train_years[-1]})")
+        print(f"  Train: {train_path} ({len(train_ds[time_coord])} timesteps, years {train_years[0]}-{train_years[-1]})")
         train_ds.to_netcdf(train_path)
         
-        print(f"  Val: {val_path} ({len(val_ds.time)} timesteps, years {val_years[0]}-{val_years[-1]})")
+        print(f"  Val: {val_path} ({len(val_ds[time_coord])} timesteps, years {val_years[0]}-{val_years[-1]})")
         val_ds.to_netcdf(val_path)
         
-        print(f"  Test: {test_path} ({len(test_ds.time)} timesteps, years {test_years[0]}-{test_years[-1]})")
+        print(f"  Test: {test_path} ({len(test_ds[time_coord])} timesteps, years {test_years[0]}-{test_years[-1]})")
         test_ds.to_netcdf(test_path)
         
         print("\n✅ Data split complete!")
@@ -250,6 +323,8 @@ def split_data(file_path):
         
     except Exception as e:
         print(f"\n❌ Split failed: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
 
